@@ -1,0 +1,99 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Add localhost to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: 127.0.0.1 localhost
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+          
+    - name: Install systemd
+      apt:
+        pkg:
+        - systemd
+        - systemd-sysv
+        - ubuntu-standard  
+
+    - name: 'Reboot'
+      reboot:
+    
+    - name: Set hostname
+      hostname:
+        name: '{{ hostname }}'
+
+    - name: Install BBB
+      shell: 'wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -v xenial-220 -s {{ hostname }} -e adm@example.com -t -g'
+        
+    # - name: Stop old greenlight
+    #   docker_compose:
+    #     project_src: /root/greenlight
+    #     build: no
+    #     stopped: yes
+
+    - name: Remove old greenlight    
+      file:
+        path: /root/greenlight
+        state: absent
+
+    - name: Clone custom greenlight
+      git:
+        repo: '{{ greenlight_repo }}'
+        dest: /root/greenglight
+
+    - name: Fetch greenlight secret
+      shell: docker run --rm bigbluebutton/greenlight:v2 bundle exec rake secret
+      register: grsec
+     
+    - name: Fetch BBB secret    
+      shell: "bbb-conf --secret | sed -n -e 's/^.*Secret: //p'"
+      register: bbbsec
+    
+    - name: Generate password for postgres  
+      shell: tr -cd '[:alnum:]' < /dev/urandom | fold -w20 | head -n1 
+      register: pgpw
+
+    - set_fact:
+        greenlight_secret: '{{ grsec.stdout }}'
+        bbb_secret: '{{ bbbsec.stdout }}' 
+        postgr_pw: '{{ pgpw.stdout }}'
+        greenlight_image: greenlight_custom
+        greenlight_image_v: release-v2
+    
+    - name: Configure greenlight   
+      template:
+        src: files/env.j2
+        dest: /root/test.env
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+
+    - name: Build greenlight image
+      shell: 
+        cmd: './scripts/image_build.sh {{ greenlight_image }} {{ greenlight_image_v }}'
+        chdir: /root/greenlight  
+
+    - name: Configure docker-compose.yml
+      template:
+        src: file/docker-compose.yml
+        dest: /root/greenlight/docker-compose.yml
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+
+    - name: Install greenlight.service
+      copy:
+        src: files/greenlight.service
+        dest: /etc/systemd/system/greenlight.service
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+
+    - name: Start greenlight   
+      systemd:
+        name: greenlight
+        state: started
+        enabled: yes

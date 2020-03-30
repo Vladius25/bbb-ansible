@@ -1,0 +1,3 @@
+---
+hostname: example.com
+greenlight_repo: git@github.com:bigbluebutton/greenlight.git
