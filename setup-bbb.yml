@@ -5,7 +5,7 @@
     - name: Add localhost to /etc/hosts
       lineinfile:
         path: /etc/hosts
-        line: 127.0.0.1 localhost
+        line: '127.0.0.1	localhost'
 
     - name: Update all packages to the latest version
       apt:
@@ -16,10 +16,12 @@
         pkg:
         - systemd
         - systemd-sysv
-        - ubuntu-standard  
+        - ubuntu-standard
+      register: install_systemd    
 
-    - name: 'Reboot'
+    - name: Reboot
       reboot:
+      when: install_systemd is changed
     
     - name: Set hostname
       hostname:
