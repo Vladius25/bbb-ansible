@@ -12,6 +12,7 @@ hostname: example.com
 greenlight_repo: git@github.com:bigbluebutton/greenlight.git
 
 ```
+Настроить ключи для git, если репозиторий приватный.
 
 ## Запуск
 Скопировать свой ssh-ключ на сервер под рута и запустить:
@@ -23,5 +24,4 @@ ansible-playbook setup-bbb.yml -u root -i hosts
 ## Тестирование
 ```bash
 vagrant up --provider virtualbox
-vagrant provision
 ```
