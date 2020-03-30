@@ -5,7 +5,7 @@
 ```
 example ansible_host=example.com
 ```
-В `host_vars/example.yml` добавить:
+В `host_vars/example.yml` добавить (для каждого хоста свой .yml файл):
 ```
 ---
 hostname: example.com
