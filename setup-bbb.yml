@@ -29,7 +29,7 @@
 
     - name: Install BBB
       shell: 'wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -v xenial-220 -s {{ hostname }} -e adm@example.com -t -g'
-        
+
     # - name: Stop old greenlight
     #   docker_compose:
     #     project_src: /root/greenlight
@@ -44,7 +44,7 @@
     - name: Clone custom greenlight
       git:
         repo: '{{ greenlight_repo }}'
-        dest: /root/greenglight
+        dest: /root/greenlight
 
     - name: Fetch greenlight secret
       shell: docker run --rm bigbluebutton/greenlight:v2 bundle exec rake secret
@@ -80,7 +80,7 @@
 
     - name: Configure docker-compose.yml
       template:
-        src: file/docker-compose.yml
+        src: files/docker-compose.yml
         dest: /root/greenlight/docker-compose.yml
         owner: root
         group: root
