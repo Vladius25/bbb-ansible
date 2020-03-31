@@ -10,7 +10,7 @@ example ansible_host=example.com
 ---
 hostname: example.com
 greenlight_repo: git@github.com:bigbluebutton/greenlight.git
-
+ssl_email: root@example.com
 ```
 Настроить ключи для git, если репозиторий приватный.
 
