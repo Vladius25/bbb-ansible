@@ -1,3 +1,4 @@
 ---
 hostname: example.com
 greenlight_repo: https://github.com/bigbluebutton/greenlight.git
+ssl_email: root@example.com

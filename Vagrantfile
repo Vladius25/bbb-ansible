@@ -15,7 +15,8 @@ Vagrant.configure("2") do |config|
         ansible.verbose = "v"
         ansible.extra_vars = {
             hostname: "example.com",
-            greenlight_repo: "https://github.com/bigbluebutton/greenlight.git"
+            greenlight_repo: "https://github.com/bigbluebutton/greenlight.git",
+            ssl_email: "root@example.com"
         }               
     end
 end
