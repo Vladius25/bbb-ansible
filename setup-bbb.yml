@@ -47,6 +47,7 @@
       git:
         repo: '{{ greenlight_repo }}'
         dest: /root/greenlight
+        accept_hostkey: yes
 
     - name: Fetch greenlight secret
       shell: docker run --rm bigbluebutton/greenlight:v2 bundle exec rake secret
